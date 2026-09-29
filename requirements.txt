@@ -1,0 +1,9 @@
+pyspark
+pandas
+pyarrow
+psycopg2-binary
+sqlalchemy
+kafka-python
+python-dotenv
+pytest
+great-expectations
