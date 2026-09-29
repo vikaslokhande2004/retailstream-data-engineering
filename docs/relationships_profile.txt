@@ -1,0 +1,127 @@
+================================================================================
+RETAILSTREAM TABLE RELATIONSHIP PROFILING
+================================================================================
+
+categories
+----------------------------------------
+Columns:
+  category_id
+  category_name
+  parent_category_id
+
+customers
+----------------------------------------
+Columns:
+  customer_id
+  first_name
+  last_name
+  email
+  city
+  country
+  signup_date
+  loyalty_tier
+  marketing_opt_in
+
+order_items
+----------------------------------------
+Columns:
+  order_item_id
+  order_id
+  product_id
+  quantity
+  unit_price
+  discount_amount
+
+orders
+----------------------------------------
+Columns:
+  order_id
+  customer_id
+  ordered_at
+  shipped_at
+  status
+  channel
+  shipping_country
+  coupon_code
+
+payments
+----------------------------------------
+Columns:
+  payment_id
+  order_id
+  method
+  amount
+  paid_at
+  status
+  failure_reason
+
+products
+----------------------------------------
+Columns:
+  product_id
+  sku
+  product_name
+  category_id
+  unit_price
+  unit_cost
+  discontinued_at
+
+returns
+----------------------------------------
+Columns:
+  return_id
+  order_item_id
+  returned_at
+  reason
+  refund_amount
+  restocked
+
+================================================================================
+COMMON KEY COLUMNS
+================================================================================
+category_id: categories, products
+customer_id: customers, orders
+order_id: order_items, orders, payments
+order_item_id: order_items, returns
+product_id: order_items, products
+status: orders, payments
+unit_price: order_items, products
+
+================================================================================
+PRIMARY KEY CANDIDATE ANALYSIS
+================================================================================
+
+TABLE: categories
+  category_id: rows=24, distinct=24, nulls=0
+  parent_category_id: rows=24, distinct=6, nulls=6
+
+TABLE: customers
+  customer_id: rows=12000, distinct=12000, nulls=0
+
+TABLE: order_items
+  order_item_id: rows=215000, distinct=215000, nulls=0
+  order_id: rows=215000, distinct=88758, nulls=0
+  product_id: rows=215000, distinct=2000, nulls=0
+
+TABLE: orders
+  order_id: rows=90000, distinct=90000, nulls=0
+  customer_id: rows=90000, distinct=8622, nulls=0
+
+TABLE: payments
+  payment_id: rows=95000, distinct=95000, nulls=0
+  order_id: rows=95000, distinct=89770, nulls=0
+
+TABLE: products
+  product_id: rows=2000, distinct=2000, nulls=0
+  category_id: rows=2000, distinct=24, nulls=0
+
+TABLE: returns
+  return_id: rows=12000, distinct=12000, nulls=0
+  order_item_id: rows=12000, distinct=12000, nulls=0
+
+================================================================================
+RELATIONSHIP PROFILING COMPLETED
+================================================================================
+SUCCESS: The process with PID 17160 (child process of PID 18892) has been terminated.
+SUCCESS: The process with PID 18892 (child process of PID 26012) has been terminated.
+SUCCESS: The process with PID 26012 (child process of PID 21872) has been terminated.
