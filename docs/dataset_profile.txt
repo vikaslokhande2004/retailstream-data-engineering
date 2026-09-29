@@ -1,0 +1,267 @@
+================================================================================
+RETAILSTREAM DATASET PROFILING
+================================================================================
+
+================================================================================
+TABLE: categories
+================================================================================
+Rows    : 24
+Columns : 3
+
+Column names:
+['category_id', 'category_name', 'parent_category_id']
+
+Schema:
+root
+ |-- category_id: integer (nullable = true)
+ |-- category_name: string (nullable = true)
+ |-- parent_category_id: integer (nullable = true)
+
+
+Null counts:
+  parent_category_id: 6
+
+Duplicate rows: 0
+
+Sample records:
++-----------+--------------+------------------+
+|category_id|category_name |parent_category_id|
++-----------+--------------+------------------+
+|1          |Garden Tools  |NULL              |
+|2          |Outdoor Living|NULL              |
+|3          |Plants        |NULL              |
+|4          |Irrigation    |NULL              |
+|5          |Soil & Compost|NULL              |
++-----------+--------------+------------------+
+only showing top 5 rows
+
+================================================================================
+TABLE: customers
+================================================================================
+Rows    : 12000
+Columns : 9
+
+Column names:
+['customer_id', 'first_name', 'last_name', 'email', 'city', 'country', 'signup_date', 'loyalty_tier', 'marketing_opt_in']
+
+Schema:
+root
+ |-- customer_id: integer (nullable = true)
+ |-- first_name: string (nullable = true)
+ |-- last_name: string (nullable = true)
+ |-- email: string (nullable = true)
+ |-- city: string (nullable = true)
+ |-- country: string (nullable = true)
+ |-- signup_date: date (nullable = true)
+ |-- loyalty_tier: string (nullable = true)
+ |-- marketing_opt_in: boolean (nullable = true)
+
+
+Null counts:
+  loyalty_tier: 5296
+
+Duplicate rows: 0
+
+Sample records:
++-----------+----------+---------+---------------------------+--------+-------+-----------+------------+----------------+
+|customer_id|first_name|last_name|email                      |city    |country|signup_date|loyalty_tier|marketing_opt_in|
++-----------+----------+---------+---------------------------+--------+-------+-----------+------------+----------------+
+|1          |Delphine  |Rossi    |delphine.rossi0@example.com|Bristol |GB     |2023-02-13 |silver      |false           |
+|2          |Bruno     |Kirby    |bruno.kirby1@example.com   |Toronto |CA     |2023-09-29 |NULL        |true            |
+|3          |Bianca    |Mwangi   |bianca.mwangi2@example.com |Raleigh |US     |2023-04-11 |NULL        |true            |
+|4          |Hugo      |Kirby    |hugo.kirby3@example.com    |Norwich |GB     |2023-12-27 |bronze      |true            |
+|5          |Hana      |Vogt     |hana.vogt4@example.com     |Auckland|NZ     |2025-06-01 |NULL        |true            |
++-----------+----------+---------+---------------------------+--------+-------+-----------+------------+----------------+
+only showing top 5 rows
+
+================================================================================
+TABLE: order_items
+================================================================================
+Rows    : 215000
+Columns : 6
+
+Column names:
+['order_item_id', 'order_id', 'product_id', 'quantity', 'unit_price', 'discount_amount']
+
+Schema:
+root
+ |-- order_item_id: integer (nullable = true)
+ |-- order_id: integer (nullable = true)
+ |-- product_id: integer (nullable = true)
+ |-- quantity: integer (nullable = true)
+ |-- unit_price: decimal(12,2) (nullable = true)
+ |-- discount_amount: decimal(12,2) (nullable = true)
+
+
+Null counts:
+  No null values found.
+
+Duplicate rows: 0
+
+Sample records:
++-------------+--------+----------+--------+----------+---------------+
+|order_item_id|order_id|product_id|quantity|unit_price|discount_amount|
++-------------+--------+----------+--------+----------+---------------+
+|1            |33445   |1         |1       |13.55     |0.00           |
+|2            |70002   |2         |1       |25.40     |0.00           |
+|3            |12781   |20        |1       |60.52     |0.00           |
+|4            |57025   |4         |1       |46.14     |0.00           |
+|5            |34619   |7         |1       |51.59     |0.00           |
++-------------+--------+----------+--------+----------+---------------+
+only showing top 5 rows
+
+================================================================================
+TABLE: orders
+================================================================================
+Rows    : 90000
+Columns : 8
+
+Column names:
+['order_id', 'customer_id', 'ordered_at', 'shipped_at', 'status', 'channel', 'shipping_country', 'coupon_code']
+
+Schema:
+root
+ |-- order_id: integer (nullable = true)
+ |-- customer_id: integer (nullable = true)
+ |-- ordered_at: timestamp_ntz (nullable = true)
+ |-- shipped_at: timestamp_ntz (nullable = true)
+ |-- status: string (nullable = true)
+ |-- channel: string (nullable = true)
+ |-- shipping_country: string (nullable = true)
+ |-- coupon_code: string (nullable = true)
+
+
+Null counts:
+  shipped_at: 10769
+  coupon_code: 70285
+
+Duplicate rows: 0
+
+Sample records:
++--------+-----------+-------------------+-------------------+----------+-------+----------------+-----------+
+|order_id|customer_id|ordered_at         |shipped_at         |status    |channel|shipping_country|coupon_code|
++--------+-----------+-------------------+-------------------+----------+-------+----------------+-----------+
+|1       |21         |2024-09-30 16:00:03|NULL               |processing|mobile |NO              |NULL       |
+|2       |181        |2025-11-25 18:26:28|2025-11-27 04:26:28|delivered |web    |GB              |NULL       |
+|3       |5155       |2025-12-02 20:36:03|2025-12-06 19:36:03|delivered |web    |AU              |NULL       |
+|4       |7717       |2025-11-30 17:54:32|2025-11-30 23:54:32|delivered |web    |ES              |NULL       |
+|5       |494        |2024-07-27 11:59:39|2024-07-29 15:59:39|delivered |mobile |AU              |SAVE40     |
++--------+-----------+-------------------+-------------------+----------+-------+----------------+-----------+
+only showing top 5 rows
+
+================================================================================
+TABLE: payments
+================================================================================
+Rows    : 95000
+Columns : 7
+
+Column names:
+['payment_id', 'order_id', 'method', 'amount', 'paid_at', 'status', 'failure_reason']
+
+Schema:
+root
+ |-- payment_id: integer (nullable = true)
+ |-- order_id: integer (nullable = true)
+ |-- method: string (nullable = true)
+ |-- amount: decimal(12,2) (nullable = true)
+ |-- paid_at: timestamp_ntz (nullable = true)
+ |-- status: string (nullable = true)
+ |-- failure_reason: string (nullable = true)
+
+
+Null counts:
+  failure_reason: 89748
+
+Duplicate rows: 0
+
+Sample records:
++----------+--------+------+------+-------------------+--------+--------------+
+|payment_id|order_id|method|amount|paid_at            |status  |failure_reason|
++----------+--------+------+------+-------------------+--------+--------------+
+|1         |6199    |card  |232.03|2024-10-26 09:36:04|captured|NULL          |
+|2         |61518   |card  |27.41 |2023-11-24 15:18:41|captured|NULL          |
+|3         |38817   |card  |42.16 |2025-12-12 15:23:04|captured|NULL          |
+|4         |13232   |card  |205.25|2024-10-13 14:17:35|captured|NULL          |
+|5         |64543   |card  |120.47|2023-07-12 21:17:12|captured|NULL          |
++----------+--------+------+------+-------------------+--------+--------------+
+only showing top 5 rows
+
+================================================================================
+TABLE: products
+================================================================================
+Rows    : 2000
+Columns : 7
+
+Column names:
+['product_id', 'sku', 'product_name', 'category_id', 'unit_price', 'unit_cost', 'discontinued_at']
+
+Schema:
+root
+ |-- product_id: integer (nullable = true)
+ |-- sku: string (nullable = true)
+ |-- product_name: string (nullable = true)
+ |-- category_id: integer (nullable = true)
+ |-- unit_price: decimal(12,2) (nullable = true)
+ |-- unit_cost: decimal(12,2) (nullable = true)
+ |-- discontinued_at: date (nullable = true)
+
+
+Null counts:
+  discontinued_at: 1847
+
+Duplicate rows: 0
+
+Sample records:
++----------+----------+-----------------------------+-----------+----------+---------+---------------+
+|product_id|sku       |product_name                 |category_id|unit_price|unit_cost|discontinued_at|
++----------+----------+-----------------------------+-----------+----------+---------+---------------+
+|1         |SKU-000001|Heritage Steel Trowel        |20         |13.55     |8.55     |NULL           |
+|2         |SKU-000002|Heritage Steel Watering Can  |15         |25.40     |16.84    |NULL           |
+|3         |SKU-000003|Heritage Steel Pruning Shears|1          |12.51     |7.30     |2025-11-01     |
+|4         |SKU-000004|Heritage Steel Compost Bin   |16         |46.14     |24.32    |NULL           |
+|5         |SKU-000005|Heritage Steel Wheelbarrow   |19         |18.87     |12.41    |NULL           |
++----------+----------+-----------------------------+-----------+----------+---------+---------------+
+only showing top 5 rows
+
+================================================================================
+TABLE: returns
+================================================================================
+Rows    : 12000
+Columns : 6
+
+Column names:
+['return_id', 'order_item_id', 'returned_at', 'reason', 'refund_amount', 'restocked']
+
+Schema:
+root
+ |-- return_id: integer (nullable = true)
+ |-- order_item_id: integer (nullable = true)
+ |-- returned_at: timestamp_ntz (nullable = true)
+ |-- reason: string (nullable = true)
+ |-- refund_amount: decimal(12,2) (nullable = true)
+ |-- restocked: boolean (nullable = true)
+
+
+Null counts:
+  No null values found.
+
+Duplicate rows: 0
+
+Sample records:
++---------+-------------+-------------------+----------------+-------------+---------+
+|return_id|order_item_id|returned_at        |reason          |refund_amount|restocked|
++---------+-------------+-------------------+----------------+-------------+---------+
+|1        |210086       |2025-07-15 21:39:31|changed_mind    |18.87        |true     |
+|2        |65856        |2025-08-17 17:06:32|damaged         |102.70       |true     |
+|3        |45963        |2023-04-08 18:35:26|not_as_described|63.74        |true     |
+|4        |77437        |2024-07-24 20:34:59|changed_mind    |117.20       |true     |
+|5        |191463       |2025-03-07 21:33:23|damaged         |14.62        |true     |
++---------+-------------+-------------------+----------------+-------------+---------+
+only showing top 5 rows
+
+================================================================================
+PROFILING COMPLETED
+================================================================================
+SUCCESS: The process with PID 20556 (child process of PID 2564) has been terminated.
+SUCCESS: The process with PID 2564 (child process of PID 3432) has been terminated.
+SUCCESS: The process with PID 3432 (child process of PID 12096) has been terminated.
