@@ -17,6 +17,7 @@ for file in sorted(RAW_DIR.glob("*.parquet")):
     table_name = file.stem
     tables[table_name] = spark.read.parquet(str(file))
 
+# print(tables)
 print("=" * 80)
 print("RETAILSTREAM TABLE RELATIONSHIP PROFILING")
 print("=" * 80)
@@ -41,6 +42,8 @@ for table_name, df in tables.items():
 for column_name, table_names in sorted(all_columns.items()):
     if len(table_names) > 1:
         print(f"{column_name}: {', '.join(table_names)}")
+
+# print(all_columns)
 
 print("\n" + "=" * 80)
 print("PRIMARY KEY CANDIDATE ANALYSIS")

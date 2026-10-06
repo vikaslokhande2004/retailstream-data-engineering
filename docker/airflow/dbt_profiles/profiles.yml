@@ -1,0 +1,12 @@
+retailstream_dbt:
+  outputs:
+    dev:
+      dbname: retail_dw
+      host: host.docker.internal
+      pass: retailstream123
+      port: 5432
+      schema: staging
+      threads: 4
+      type: postgres
+      user: retailadmin
+  target: dev

@@ -1,0 +1,69 @@
+services:
+
+  airflow-init:
+    build: .
+    container_name: retailstream-airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailadmin:retailstream123@host.docker.internal:5432/retail_dw
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    volumes:
+      - ../../dags:/opt/airflow/dags
+      - ../../dbt:/opt/airflow/dbt
+      - ./dbt_profiles:/home/airflow/.dbt
+      - airflow_logs:/opt/airflow/logs
+    command:
+      - bash
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Retail \
+          --lastname Stream \
+          --role Admin \
+          --email admin@retailstream.local
+
+  airflow-webserver:
+    build: .
+    container_name: retailstream-airflow-webserver
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailadmin:retailstream123@host.docker.internal:5432/retail_dw
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../dags:/opt/airflow/dags
+      - ../../dbt:/opt/airflow/dbt
+      - ./dbt_profiles:/home/airflow/.dbt
+      - airflow_logs:/opt/airflow/logs
+    command: webserver
+
+  airflow-scheduler:
+    build: .
+    container_name: retailstream-airflow-scheduler
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailadmin:retailstream123@host.docker.internal:5432/retail_dw
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    volumes:
+      - ../../dags:/opt/airflow/dags
+      - ../../dbt:/opt/airflow/dbt
+      - ./dbt_profiles:/home/airflow/.dbt
+      - airflow_logs:/opt/airflow/logs
+    command: scheduler
+
+volumes:
+  airflow_logs:
