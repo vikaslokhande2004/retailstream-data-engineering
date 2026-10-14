@@ -6,7 +6,7 @@ The project is designed to demonstrate practical data engineering skills, includ
 
 ## Architecture
 
-![RetailStream Architecture](docs/architecture.png)
+![RetailStream Architecture]([docs/architecture.png](https://github.com/vikaslokhande2004/retailstream-data-engineering/blob/main/docs/RetailStream%20Data%20Engineering%20Pipeline.png))
 
 ```text
               Retail E-commerce Parquet Data
