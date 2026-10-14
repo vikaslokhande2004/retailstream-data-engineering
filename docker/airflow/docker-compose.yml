@@ -8,11 +8,15 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailadmin:retailstream123@host.docker.internal:5432/retail_dw
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      PIPELINE_DATA_DIR: /opt/retailstream/data
     volumes:
       - ../../dags:/opt/airflow/dags
       - ../../dbt:/opt/airflow/dbt
+      - ../../scripts:/opt/airflow/scripts
       - ./dbt_profiles:/home/airflow/.dbt
       - airflow_logs:/opt/airflow/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../data:/opt/retailstream/data
     command:
       - bash
       - -c
@@ -38,13 +42,17 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailadmin:retailstream123@host.docker.internal:5432/retail_dw
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      PIPELINE_DATA_DIR: /opt/retailstream/data
     ports:
       - "8080:8080"
     volumes:
       - ../../dags:/opt/airflow/dags
       - ../../dbt:/opt/airflow/dbt
+      - ../../scripts:/opt/airflow/scripts
       - ./dbt_profiles:/home/airflow/.dbt
       - airflow_logs:/opt/airflow/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../data:/opt/retailstream/data
     command: webserver
 
   airflow-scheduler:
@@ -58,11 +66,15 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://retailadmin:retailstream123@host.docker.internal:5432/retail_dw
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      PIPELINE_DATA_DIR: /opt/retailstream/data
     volumes:
       - ../../dags:/opt/airflow/dags
       - ../../dbt:/opt/airflow/dbt
+      - ../../scripts:/opt/airflow/scripts
       - ./dbt_profiles:/home/airflow/.dbt
       - airflow_logs:/opt/airflow/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../data:/opt/retailstream/data
     command: scheduler
 
 volumes:

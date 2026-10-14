@@ -2,13 +2,19 @@ from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, count, when, lit, current_timestamp
 
-
 SILVER_PATH = Path("data/silver")
 QUALITY_PATH = Path("data/gold/data_quality")
+# Columns where NULL values are valid business data
+OPTIONAL_NULL_COLUMNS = {
+    "categories": ["parent_category_id"],
+    "customers": ["loyalty_tier"],
+    "orders": ["shipped_at", "coupon_code"],
+    "payments": ["failure_reason"],
+    "products": ["discontinued_at"],
+}
 
 spark = (
-    SparkSession.builder
-    .appName("RetailStream-Silver-Data-Quality")
+    SparkSession.builder.appName("RetailStream-Silver-Data-Quality")
     .master("local[*]")
     .getOrCreate()
 )
@@ -17,16 +23,10 @@ spark.sparkContext.setLogLevel("WARN")
 
 results = []
 
+
 def add_result(table, check, status, total, failed):
-    results.append(
-        (
-            table,
-            check,
-            status,
-            total,
-            failed
-        )
-    )
+    results.append((table, check, status, total, failed))
+
 
 def validate_table(table_path):
 
@@ -47,22 +47,10 @@ def validate_table(table_path):
     # ---------------------------------------------------------
 
     if total_rows == 0:
-        add_result(
-            table_name,
-            "table_not_empty",
-            "FAIL",
-            total_rows,
-            0
-        )
+        add_result(table_name, "table_not_empty", "FAIL", total_rows, 0)
         print("FAIL: Table is empty")
     else:
-        add_result(
-            table_name,
-            "table_not_empty",
-            "PASS",
-            total_rows,
-            0
-        )
+        add_result(table_name, "table_not_empty", "PASS", total_rows, 0)
         print("PASS: Table contains records")
 
     # ---------------------------------------------------------
@@ -79,41 +67,29 @@ def validate_table(table_path):
         status = "PASS"
         print("PASS: No dupliacte rows")
 
-    add_result(
-        table_name,
-        "duplicate_rows",
-        status,
-        total_rows,
-        duplicate_rows
-    )
+    add_result(table_name, "duplicate_rows", status, total_rows, duplicate_rows)
 
     # ---------------------------------------------------------
     # CHECK 3: Null values
     # ---------------------------------------------------------
 
-    for column_name in df.columns:
-        null_count = (
-            df.filter(col(column_name).isNull())
-            .count()
-        )
+    optional_columns = OPTIONAL_NULL_COLUMNS.get(table_name, [])
 
-        if null_count > 0:
+    for column_name in df.columns:
+        null_count = df.filter(col(column_name).isNull()).count()
+
+        if null_count > 0 and column_name not in optional_columns:
             status = "FAIL"
-            print(
-                f"FAIL: {column_name} has "
-                f"{null_count} null values"
-            )
+            print(f"FAIL: {column_name} has {null_count} null values")
         else:
             status = "PASS"
 
-        add_result(
-                    table_name,
-                    f"null_check:{column_name}",
-                    status,
-                    total_rows,
-                    null_count
-                )
+            if null_count > 0:
+                print(f"PASS: {column_name} has " f"{null_count} allowed null values")
 
+        add_result(
+            table_name, f"null_check:{column_name}", status, total_rows, null_count
+        )
     # ---------------------------------------------------------
     # CHECK 4: Blank string values
     # ---------------------------------------------------------
@@ -125,30 +101,20 @@ def validate_table(table_path):
     ]
 
     for column_name in string_columns:
-        black_count = (
-            df.filter(
-                col(column_name).isNotNull()
-                & (col(column_name) == "")
-            )
-            .count()
-        )
+        black_count = df.filter(
+            col(column_name).isNotNull() & (col(column_name) == "")
+        ).count()
 
         if black_count > 0:
             status = "FAIL"
-            print(
-                f"FAIL: {column_name} has "
-                f"{black_count} blank values"
-            )
+            print(f"FAIL: {column_name} has " f"{black_count} blank values")
         else:
             status = "PASS"
 
         add_result(
-            table_name,
-            f"blank_check:{column_name}",
-            status,
-            total_rows,
-            black_count
+            table_name, f"blank_check:{column_name}", status, total_rows, black_count
         )
+
 
 for table_path in sorted(SILVER_PATH.iterdir()):
     if table_path.is_dir():
@@ -163,32 +129,20 @@ result_schema = [
     "check_name",
     "status",
     "total_records",
-    "failed_records"
+    "failed_records",
 ]
 
-quality_df = spark.createDataFrame(
-    results,
-    result_schema
-)
+quality_df = spark.createDataFrame(results, result_schema)
 
-quality_df = quality_df.withColumn(
-    "run_timestamp",
-    current_timestamp()
-)
+quality_df = quality_df.withColumn("run_timestamp", current_timestamp())
 
 # -------------------------------------------------------------
 # WRITE QUALITY RESULTS
 # -------------------------------------------------------------
 
-QUALITY_PATH.mkdir(
-    parents=True,
-    exist_ok=True
-)
+QUALITY_PATH.mkdir(parents=True, exist_ok=True)
 
-quality_df.write \
-    .mode("overwrite") \
-    .parquet(str(QUALITY_PATH))
-
+quality_df.write.mode("overwrite").parquet(str(QUALITY_PATH))
 
 
 # -------------------------------------------------------------
@@ -201,16 +155,22 @@ print("=" * 80)
 
 quality_df.groupBy("status").count().show()
 
-quality_df.orderBy(
-    "table_name",
-    "check_name"
-).show(
-    100,
-    truncate=False
-)
+quality_df.orderBy("table_name", "check_name").show(100, truncate=False)
 
 print("\n" + "=" * 80)
 print("SILVER DATA QUALITY VALIDATION COMPLETED")
 print("=" * 80)
 
+
+failed_count = quality_df.filter(col("status") == "FAIL").count()
+
+if failed_count > 0:
+    print(f"VALIDATION FAILED: {failed_count} failed checks")
+    spark.stop()
+    raise RuntimeError(
+        f"Silver data quality validation failed: "
+        f"{failed_count} checks failed."
+    )
+
 spark.stop()
+print("All Silver data quality checks passed.")

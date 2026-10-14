@@ -1,20 +1,23 @@
+# Python
 .venv/
 __pycache__/
-*.pyc
-.env
-*.log
-.pytest_cache/
-.mypy_cache/
-.vscode/
-.idea/
+*.py[cod]
 
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local data
 data/raw/
 data/bronze/
 data/silver/
 data/gold/
+data/.raw_from_rustfs/
 
-dbt/target/
-dbt/logs/
-
-spark-warehouse/
-checkpoint/
+# Logs and generated files
+logs/
+.airflow/
+.pytest_cache/

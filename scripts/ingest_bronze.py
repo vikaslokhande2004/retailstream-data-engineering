@@ -2,7 +2,9 @@ from pathlib import Path
 import boto3
 from pyspark.sql import SparkSession
 
-ENDPOINT = "http://localhost:19000"
+import os
+
+ENDPOINT = os.getenv("RUSTFS_ENDPOINT", "http://localhost:19000")
 ACCESS_KEY = "retailadmin"
 SECRET_KEY = "retailstream123"
 BUCKET = "retailstream"
