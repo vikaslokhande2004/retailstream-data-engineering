@@ -207,7 +207,7 @@ The pipeline image includes the Java runtime and PySpark dependencies needed for
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/vikaslokhande2004/retailstream-data-engineering.git
 cd retailstream-data-engineering
 ```
 
